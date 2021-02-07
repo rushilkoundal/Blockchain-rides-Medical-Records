@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.7.15;
 
 contract Agent {
     
@@ -16,14 +16,7 @@ contract Agent {
         address[] patientAccessList;
     }
 
-    struct insurer {
-        string name;
-        uint count_of_patient;
-        address[] PatientWhoClaimed;
-        address[] DocName;
-        uint[] diagnosis; 
-    }
-
+   
 
     uint creditPool;
 
@@ -33,8 +26,7 @@ contract Agent {
 
     mapping (address => patient) patientInfo;
     mapping (address => doctor) doctorInfo;
-    mapping (address => insurer) insurerInfo;
-    mapping (address => address) Patient_Insurer;
+ 
     // might not be necessary
     mapping (address => string) patientRecords;
 
@@ -54,10 +46,7 @@ contract Agent {
             doctorList.push(addr)-1;
 
        }
-       else if(_designation == 2){
-           insurerInfo[addr].name = _name;
-           insurerList.push(addr)-1;
-       }
+       
        else{
            revert();
        }
@@ -90,76 +79,6 @@ contract Agent {
         patientInfo[msg.sender].doctorAccessList.push(addr)-1;
         
 
-    }
-
-   
-    function select_insurer(address iaddr, uint[] _diagnosis) payable public {
-        uint total_amount = (_diagnosis.length);
-        require(msg.value == total_amount*(1 ether));
-        // require(msg.sender.balance >= msg.value);
-        iaddr.transfer(msg.value);
-        Patient_Insurer[msg.sender] = iaddr;
-        patientInfo[msg.sender].diagnosis = _diagnosis;
-        insurerInfo[iaddr].count_of_patient++;
-    }
-
-    //must be called by doctor
-    function insurance_claim(address paddr, uint _diagnosis, string _hash) public {
-        bool patientFound = false;
-        for(uint i = 0;i<doctorInfo[msg.sender].patientAccessList.length;i++){
-            if(doctorInfo[msg.sender].patientAccessList[i]==paddr){
-                msg.sender.transfer(2 ether);
-                creditPool -= 2;
-                patientFound = true;
-                
-            }
-            
-        }
-        if(patientFound==true){
-            set_hash(paddr, _hash);
-            remove_patient(paddr, msg.sender);
-        }else {
-            revert();
-        }
-
-        bool DiagnosisFound = false;
-        for(uint j = 0; j < patientInfo[paddr].diagnosis.length;j++){
-            if(patientInfo[paddr].diagnosis[j] == _diagnosis)DiagnosisFound = true;
-        }
-        if(DiagnosisFound){
-            insurerInfo[Patient_Insurer[paddr]].PatientWhoClaimed.push(paddr)-1;
-            insurerInfo[Patient_Insurer[paddr]].DocName.push(msg.sender)-1;
-            insurerInfo[Patient_Insurer[paddr]].diagnosis.push(_diagnosis)-1;
-        }
-    }
-
-    //must be called by insurer
-
-    function accept_claim(address paddr) public payable {
-        // require(msg.sender.balance >= msg.value);
-        require(msg.value == 4 ether);
-        paddr.transfer(msg.value);
-        uint index;
-        remove_element_in_array(insurerInfo[msg.sender].PatientWhoClaimed,paddr);
-        if(insurerInfo[msg.sender].diagnosis.length == 1){
-            delete insurerInfo[msg.sender].DocName[index];
-        }
-        else {
-            insurerInfo[msg.sender].DocName[index] = insurerInfo[msg.sender].DocName[insurerInfo[msg.sender].DocName.length - 1];
-            delete insurerInfo[msg.sender].DocName[insurerInfo[msg.sender].DocName.length - 1];
-
-        }
-        insurerInfo[msg.sender].DocName.length--;
-
-        if(insurerInfo[msg.sender].diagnosis.length == 1){
-            delete insurerInfo[msg.sender].diagnosis[index];
-        }
-        else {
-            insurerInfo[msg.sender].diagnosis[index] = insurerInfo[msg.sender].diagnosis[insurerInfo[msg.sender].diagnosis.length - 1];
-            delete insurerInfo[msg.sender].diagnosis[insurerInfo[msg.sender].diagnosis.length - 1];
-
-        }
-        insurerInfo[msg.sender].diagnosis.length--;   
     }
     
     function remove_element_in_array(address[] storage Array, address addr) internal returns(uint)
@@ -214,9 +133,6 @@ contract Agent {
 
     function get_doctor_list() public view returns(address[]){
         return doctorList;
-    }
-    function get_insurer_list() public view returns(address[]){
-        return insurerList;
     }
 
     function get_hash(address paddr) public view returns(string){
