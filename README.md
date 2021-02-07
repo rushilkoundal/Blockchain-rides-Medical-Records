@@ -5,10 +5,17 @@ With blockchain applications in healthcare, now you can publish your medical rec
 # Tech in which used 
 
 # 1.Ganache
-  Ganache is a personal blockchain for rapid Ethereum and Corda distributed application development.
+    Ganache is a personal blockchain for rapid Ethereum and Corda distributed application development.
   
 # 2.Metamask
-  It easy for web applications to communicate with the Ethereum blockchain.
+    It easy for web applications to communicate with the Ethereum blockchain.
   
 # 3.IPFS
-  IPFS is a protocol and peer-to-peer network for storing and sharing data in a distributed file system.This will use to store data on blockchain
+    IPFS is a protocol and peer-to-peer network for storing and sharing data in a distributed file system.This will use to store data on blockchain
+
+# 4.Truffle Suit
+    You can use to deploy contracts, develop your applications, and run tests.
+    
+# 5.Web-Server
+    using web-server to show the details of Doctors and User Patients.
+    
